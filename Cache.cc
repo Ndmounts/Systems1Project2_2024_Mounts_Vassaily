@@ -2,6 +2,10 @@
 #include "Cache.h"
 #include <iostream>
 #include <cmath>
+#include "AddressDecoder.h"
+
+// Intialize decoder
+AddressDecoder* decode;
 
 Cache::Cache(unsigned char* mainMemory, int cacheSizeBytes, int blockSizeBytes, int associativity)
     : mainMemory(mainMemory),
