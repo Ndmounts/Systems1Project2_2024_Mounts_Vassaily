@@ -1,30 +1,43 @@
-#ifndef CACHE_H 
+// Cache.h
+#ifndef CACHE_H
 #define CACHE_H
 
-#include "Set.h"            // Assuming Set and AddressDecoder classes are defined elsewhere
-#include "AddressDecoder.h" // Ensure this file defines the AddressDecoder class
+#include "Set.h"
+#include "AddressDecoder.h"
 
 class Cache {
-    private:
-        int cacheSize;
-        int blockSize;
-        int setAssociativity;
-        int numSets;                // Number of sets in the cache
-        Set** sets;                 // Array of pointers to Sets
-        AddressDecoder* decoder;    // Pointer to AddressDecoder instance
-        unsigned char* mainMemory;  // Pointer to the main memory
+public:
+    // Constructor
+    Cache(unsigned char* mainMemory, int cacheSizeBytes, int blockSizeBytes, int associativity);
 
-    public:
-        // Constructor
-        Cache(unsigned char* mainMemory, int cacheSize, int blockSize, int setAssociativity);
+    // Destructor
+    ~Cache();
 
-        // Destructor to clean up allocated memory
-        ~Cache();
+    // Simulate a read operation
+    unsigned char read(unsigned long address);
 
-        // Methods for read, write, and display
-        unsigned char read(unsigned long address);  // Simulate a read from cache
-        void write(unsigned long address, unsigned char value); // Simulate a write to cache
-        void display() const;                       // Display contents of the cache for debugging
+    // Simulate a write operation
+    void write(unsigned long address, unsigned char value);
+
+    // Display cache contents for debugging
+    void display();
+
+private:
+    // Pointer to the main memory
+    unsigned char* mainMemory;
+
+    // Cache configuration parameters
+    int cacheSizeBytes;
+    int blockSizeBytes;
+    int associativity;
+    int numSets;
+    int numBlocks;
+
+    // Array of pointers to Sets
+    Set** sets;
+
+    // AddressDecoder instance
+    AddressDecoder* addressDecoder;
 };
 
 #endif // CACHE_H
