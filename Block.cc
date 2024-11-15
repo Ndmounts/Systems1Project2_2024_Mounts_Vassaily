@@ -1,8 +1,8 @@
 # include "Block.h"
 # include "AddressDecoder.h"
+
 #include <iostream>
-
-
+#include <stdlib.h>
 #include <chrono>
 
 AddressDecoder* decoder;  // Pointer to an AddressDecoder object
@@ -77,10 +77,12 @@ void Block::setTag(unsigned long newTag) {
     tag = newTag;
     valid = true;
     dirty = false;
-    timestamp = updateTimestamp();
+    updateTimestamp();
 }
 
 
 // Read and Write Methods
 
 // Read
+
+

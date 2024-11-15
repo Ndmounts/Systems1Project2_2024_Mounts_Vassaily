@@ -2,6 +2,12 @@
 #define BLOCK_H
 
 #include <chrono>
+#include <iostream>
+#include <stdlib.h>
+
+
+
+std::chrono::high_resolution_clock m_clock;
 
 class Block {
     private:
@@ -13,10 +19,12 @@ class Block {
         long timestamp;                 // Timestamp for LRU tracking
         unsigned char* mainMemory;      // Pointer to main memory
 
-        // Private helper to update timestamp
-        void updateTimestamp();
+        // Private helper to update timestamp 
+        void updateTimestamp() {
+            timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(m_clock.now().time_since_epoch()).count();
+        };
 
-    public:
+        public:
         // Constructor
         Block(int blockSize, unsigned char* mainMemory);
 
@@ -37,7 +45,7 @@ class Block {
         bool isDirty() const { return dirty; }
         void setTag(unsigned long newTag) { tag = newTag; valid = true; dirty = false; }
         void markDirty() { dirty = true; }
-        long getTimestamp() const { return timestamp; }
+        long getTimestamp() const { return timestamp;};
 };
 
 #endif // BLOCK_H
