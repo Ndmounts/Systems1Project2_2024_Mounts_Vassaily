@@ -19,6 +19,9 @@ public:
 
     // Getter for memory size
     int getMemSize() const;
+
+    // Display method
+    void display() const;
 };
 
 #endif // MEMORY_H

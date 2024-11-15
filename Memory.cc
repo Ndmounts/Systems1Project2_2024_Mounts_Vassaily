@@ -1,5 +1,6 @@
 #include "Memory.h"
 #include <stdexcept>
+#include <cstdio>
 
 Memory::Memory(int size) : mem_size(size) {
     mem_bytes = new unsigned char[mem_size];
@@ -28,4 +29,17 @@ void Memory::setByte(unsigned long address, unsigned char value) {
 
 int Memory::getMemSize() const {
     return mem_size;
+}
+
+void Memory::display() const {
+    printf("Main memory:\n");
+    for (int i = 0; i < mem_size; ++i) {
+        if (i % 16 == 0) {
+            printf("%04x: ", i);
+        }
+        printf("%02x ", mem_bytes[i]);
+        if ((i + 1) % 16 == 0 || i == mem_size - 1) {
+            printf("\n");
+        }
+    }
 }
