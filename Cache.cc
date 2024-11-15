@@ -1,78 +1,39 @@
-// Cache.cc
 #include "Cache.h"
 #include <iostream>
-#include <cmath>
-#include "AddressDecoder.h"
 
-// Intialize decoder
-AddressDecoder* decode;
-
-Cache::Cache(unsigned char* mainMemory, int cacheSizeBytes, int blockSizeBytes, int associativity)
-    : mainMemory(mainMemory),
-      cacheSizeBytes(cacheSizeBytes),
-      blockSizeBytes(blockSizeBytes),
-      associativity(associativity)
-{
-    // Calculate the number of blocks and sets
-    numBlocks = cacheSizeBytes / blockSizeBytes;
+Cache::Cache(Memory* memory, int cacheSize, int blockSize, int associativity)
+    : memory(memory), cacheSize(cacheSize), blockSize(blockSize), associativity(associativity) {
+    int numBlocks = cacheSize / blockSize;
     numSets = numBlocks / associativity;
+    decoder = new AddressDecoder(cacheSize, blockSize, associativity);
 
-    // Create the AddressDecoder instance
-    addressDecoder = new AddressDecoder(blockSizeBytes, numSets);
-
-    // Initialize the array of Sets
     sets = new Set*[numSets];
     for (int i = 0; i < numSets; ++i) {
-        sets[i] = new Set(associativity, blockSizeBytes);
+        sets[i] = new Set(associativity, blockSize, memory, decoder);
     }
 }
 
-Cache::~Cache()
-{
-    // Delete each Set
+Cache::~Cache() {
     for (int i = 0; i < numSets; ++i) {
         delete sets[i];
     }
     delete[] sets;
-
-    // Delete the AddressDecoder instance
-    delete addressDecoder;
+    delete decoder;
 }
 
-unsigned char Cache::read(unsigned long address)
-{
-    // Decode the address into tag, set index, and block offset
-    unsigned long tag;
-    int setIndex;
-    int blockOffset;
-    addressDecoder->decode(address, tag, setIndex, blockOffset);
-
-    // Access the appropriate Set
-    Set* set = sets[setIndex];
-    unsigned char data = set->read(tag, blockOffset, mainMemory, address);
-
-    return data;
+unsigned char Cache::read(unsigned long address) {
+    unsigned long setIndex = decoder->getSetIndex(address);
+    return sets[setIndex]->read(address);
 }
 
-void Cache::write(unsigned long address, unsigned char value)
-{
-    // Decode the address into tag, set index, and block offset
-    unsigned long tag;
-    int setIndex;
-    int blockOffset;
-    addressDecoder->decode(address, tag, setIndex, blockOffset);
-
-    // Access the appropriate Set
-    Set* set = sets[setIndex];
-    set->write(tag, blockOffset, value, mainMemory, address);
+void Cache::write(unsigned long address, unsigned char value) {
+    unsigned long setIndex = decoder->getSetIndex(address);
+    sets[setIndex]->write(address, value);
 }
 
-void Cache::display()
-{
-    // Display the contents of the cache
-    std::cout << "Cache Contents:" << std::endl;
+void Cache::display() const {
     for (int i = 0; i < numSets; ++i) {
-        std::cout << "Set " << i << ":" << std::endl;
+        std::cout << "Set " << i << ":\n";
         sets[i]->display();
     }
 }

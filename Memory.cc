@@ -1,45 +1,45 @@
 #include "Memory.h"
-#include <stdexcept>
-#include <cstdio>
+#include <iostream>
+#include <iomanip>
 
-Memory::Memory(int size) : mem_size(size) {
-    mem_bytes = new unsigned char[mem_size];
-    for (int i = 0; i < mem_size; ++i) {
-        mem_bytes[i] = i % 255;
+Memory::Memory(unsigned long size) : memorySize(size) { // Updated constructor
+    bytes = new unsigned char[memorySize];
+    for (unsigned long i = 0; i < memorySize; ++i) { // Changed loop variable to unsigned long
+        bytes[i] = i % 255;
     }
 }
 
 Memory::~Memory() {
-    delete[] mem_bytes;
+    delete[] bytes;
 }
 
 unsigned char Memory::getByte(unsigned long address) const {
-    if (address >= static_cast<unsigned long>(mem_size)) {
-        throw std::out_of_range("Address out of range in getByte");
+    if (address < memorySize) {
+        return bytes[address];
+    } else {
+        std::cerr << "Memory::getByte: Invalid address " << address << std::endl;
+        return 0;
     }
-    return mem_bytes[address];
 }
 
 void Memory::setByte(unsigned long address, unsigned char value) {
-    if (address >= static_cast<unsigned long>(mem_size)) {
-        throw std::out_of_range("Address out of range in setByte");
+    if (address < memorySize) {
+        bytes[address] = value;
+    } else {
+        std::cerr << "Memory::setByte: Invalid address " << address << std::endl;
     }
-    mem_bytes[address] = value;
 }
 
-int Memory::getMemSize() const {
-    return mem_size;
+unsigned long Memory::getMemorySize() const {
+    return memorySize;
 }
 
 void Memory::display() const {
-    printf("Main memory:\n");
-    for (int i = 0; i < mem_size; ++i) {
-        if (i % 16 == 0) {
-            printf("%04x: ", i);
-        }
-        printf("%02x ", mem_bytes[i]);
-        if ((i + 1) % 16 == 0 || i == mem_size - 1) {
-            printf("\n");
+    for (unsigned long i = 0; i < memorySize; ++i) { // Changed loop variable to unsigned long
+        std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)bytes[i] << " ";
+        if ((i + 1) % 16 == 0) {
+            std::cout << std::endl;
         }
     }
+    std::cout << std::dec << std::endl;
 }

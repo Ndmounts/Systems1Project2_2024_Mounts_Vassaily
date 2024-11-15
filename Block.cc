@@ -1,90 +1,64 @@
-# include "Block.h"
-# include "AddressDecoder.h"
-
+#include "Block.h"
 #include <iostream>
-#include <stdlib.h>
-#include <chrono>
+#include <iomanip>
 
-AddressDecoder* decoder;  // Pointer to an AddressDecoder object
-
-
-Block::Block(int blockSize, unsigned char* mainMemory) {
-    this->blockSize = blockSize;
-    this->mainMemory = mainMemory;
+Block::Block(int blockSize, Memory* memory) : blockSize(blockSize), memory(memory) {
     data = new unsigned char[blockSize];
     valid = false;
     dirty = false;
     timestamp = 0;
-
-
+    tag = 0;
 }
-
-// Memory methods
-
-// Load from Memory
-
-void Block::loadFromMemory(unsigned long address, unsigned long tag) {
-    unsigned long baseAddress = decoder->getBlockBaseAddress(address);
-    for (int i = 0; i < blockSize; i++) {
-        data[i] = mainMemory[baseAddress + i];
-    }
-    setTag(tag);
-}
-
-// Save to Memory
-void Block::saveToMemory(unsigned long address) {
-    unsigned long baseAddress = decoder->getBlockBaseAddress(address);
-    for (int i = 0; i < blockSize; i++) {
-        mainMemory[baseAddress + i] = data[i];
-    }
-}
-
-
-
 
 Block::~Block() {
     delete[] data;
 }
 
-// Getter Methods
-
-
-// Get Tag
-unsigned long Block::getTag() const {
-    return tag;
+unsigned char Block::read(int blockOffset) {
+    if (blockOffset >= 0 && blockOffset < blockSize) {
+        updateTimestamp();
+        return data[blockOffset];
+    } else {
+        std::cerr << "Block::read: Invalid blockOffset " << blockOffset << std::endl;
+        return 0;
+    }
 }
 
-// Is Valid
-bool Block::isValid() const {
-    return valid;
+void Block::write(int blockOffset, unsigned char value) {
+    if (blockOffset >= 0 && blockOffset < blockSize) {
+        data[blockOffset] = value;
+        dirty = true;
+        updateTimestamp();
+    } else {
+        std::cerr << "Block::write: Invalid blockOffset " << blockOffset << std::endl;
+    }
 }
 
-// Is Dirty
-bool Block::isDirty() const {
-    return dirty;
-}
-
-// Get Timestamp
-long Block::getTimestamp() const {
-    return timestamp;
-}
-
-
-// Setter Methods
-
-// Set Tag
-void Block::setTag(unsigned long newTag) {
-    tag = newTag;
+void Block::loadFromMemory(unsigned long address) {
+    for (int i = 0; i < blockSize; ++i) {
+        data[i] = memory->getByte(address + i);
+    }
     valid = true;
     dirty = false;
     updateTimestamp();
 }
 
+void Block::saveToMemory(unsigned long address) {
+    for (int i = 0; i < blockSize; ++i) {
+        memory->setByte(address + i, data[i]);
+    }
+    dirty = false;
+}
 
-// Read and Write Methods
+void Block::updateTimestamp() {
+    timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(
+        m_clock.now().time_since_epoch()).count();
+}
 
-// Read
-
-
-
-
+void Block::display() const {
+    std::cout << "Block (tag: " << std::hex << tag << ", valid: " << valid << ", dirty: " << dirty << "): ";
+    for (int i = 0; i < blockSize; ++i) {
+        std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)data[i] << " ";
+    }
+    std::cout << std::dec << std::endl;
+}

@@ -1,26 +1,21 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
+#include <iostream>
+
 class Memory {
 private:
-    int mem_size;
-    unsigned char* mem_bytes;
-
+    unsigned long memorySize;      // Changed from int to unsigned long
+    unsigned char* bytes;
 public:
-    // Constructor
-    Memory(int size);
-
-    // Destructor
+    Memory(unsigned long size);    // Changed constructor parameter type
     ~Memory();
 
-    // Accessors
     unsigned char getByte(unsigned long address) const;
     void setByte(unsigned long address, unsigned char value);
 
-    // Getter for memory size
-    int getMemSize() const;
+    unsigned long getMemorySize() const; // Changed return type
 
-    // Display method
     void display() const;
 };
 
