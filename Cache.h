@@ -3,6 +3,7 @@
 
 #include "Set.h"
 #include "AddressDecoder.h"
+#include "PerformanceCounter.h"
 
 class Cache {
 private:
@@ -13,6 +14,9 @@ private:
     int numSets;
     Set** sets;
     AddressDecoder* decoder;
+
+    PerformanceCounter performanceCounter;
+
 
 public:
     Cache(Memory* memory, int cacheSize, int blockSize, int associativity);

@@ -22,13 +22,16 @@ Cache::~Cache() {
 }
 
 unsigned char Cache::read(unsigned long address) {
+    performanceCounter.incrementAccess();
     unsigned long setIndex = decoder->getSetIndex(address);
-    return sets[setIndex]->read(address);
+    unsigned char value = sets[setIndex]->read(address, performanceCounter); // Pass counter
+    return value;
 }
 
 void Cache::write(unsigned long address, unsigned char value) {
+    performanceCounter.incrementAccess();
     unsigned long setIndex = decoder->getSetIndex(address);
-    sets[setIndex]->write(address, value);
+    sets[setIndex]->write(address, value, performanceCounter); // Pass counter
 }
 
 void Cache::display() const {

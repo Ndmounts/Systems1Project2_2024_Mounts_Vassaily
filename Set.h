@@ -3,6 +3,8 @@
 
 #include "Block.h"
 #include "AddressDecoder.h"
+#include "Memory.h"
+#include "PerformanceCounter.h"
 
 class Set {
 private:
@@ -16,8 +18,8 @@ public:
     Set(int numBlocks, int blockSize, Memory* memory, AddressDecoder* decoder);
     ~Set();
 
-    unsigned char read(unsigned long address);
-    void write(unsigned long address, unsigned char value);
+    unsigned char read(unsigned long address, PerformanceCounter& performanceCounter);
+    void write(unsigned long address, unsigned char value, PerformanceCounter& performanceCounter);
 
     void display() const;
 };

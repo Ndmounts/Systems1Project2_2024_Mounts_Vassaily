@@ -17,7 +17,7 @@ Set::~Set() {
     delete[] blocks;
 }
 
-unsigned char Set::read(unsigned long address) {
+unsigned char Set::read(unsigned long address, PerformanceCounter& performanceCounter) {
     unsigned long tag = decoder->getTag(address);
     unsigned long setIndex = decoder->getSetIndex(address);
     int blockOffset = decoder->getBlockOffset(address);
@@ -33,10 +33,14 @@ unsigned char Set::read(unsigned long address) {
 
     if (targetBlock) {
         // Cache hit
+        performanceCounter.incrementHit();
+        performanceCounter.incrementAccess();
         return targetBlock->read(blockOffset);
     } else {
         // Cache miss
         // Find a block to replace
+        performanceCounter.incrementMiss();
+        performanceCounter.incrementAccess();
         Block* blockToReplace = nullptr;
         // First look for an invalid block
         for (int i = 0; i < numBlocks; ++i) {
@@ -59,6 +63,7 @@ unsigned char Set::read(unsigned long address) {
 
         // If dirty, write back to Memory
         if (blockToReplace->isDirty()) {
+            performanceCounter.incrementWriteback();
             unsigned long oldAddress = decoder->reconstructAddress(blockToReplace->getTag(), setIndex);
             blockToReplace->saveToMemory(oldAddress);
         }
@@ -74,7 +79,7 @@ unsigned char Set::read(unsigned long address) {
     }
 }
 
-void Set::write(unsigned long address, unsigned char value) {
+void Set::write(unsigned long address, unsigned char value, PerformanceCounter& performanceCounter) {
     unsigned long tag = decoder->getTag(address);
     unsigned long setIndex = decoder->getSetIndex(address);
     int blockOffset = decoder->getBlockOffset(address);
@@ -89,10 +94,14 @@ void Set::write(unsigned long address, unsigned char value) {
     }
 
     if (targetBlock) {
-        // Cache hit
+        performanceCounter.incrementHit();
+        performanceCounter.incrementAccess();
         targetBlock->write(blockOffset, value);
+        return;
     } else {
         // Cache miss
+        performanceCounter.incrementMiss();
+        performanceCounter.incrementAccess();
         // Find a block to replace
         Block* blockToReplace = nullptr;
         // First look for an invalid block
@@ -116,6 +125,7 @@ void Set::write(unsigned long address, unsigned char value) {
 
         // If dirty, write back to Memory
         if (blockToReplace->isDirty()) {
+            performanceCounter.incrementWriteback();
             unsigned long oldAddress = decoder->reconstructAddress(blockToReplace->getTag(), setIndex);
             blockToReplace->saveToMemory(oldAddress);
         }
