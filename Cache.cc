@@ -24,19 +24,24 @@ Cache::~Cache() {
 unsigned char Cache::read(unsigned long address) {
     performanceCounter.incrementAccess();
     unsigned long setIndex = decoder->getSetIndex(address);
-    unsigned char value = sets[setIndex]->read(address, performanceCounter); // Pass counter
+    unsigned char value = sets[setIndex]->read(address, performanceCounter);
     return value;
 }
 
 void Cache::write(unsigned long address, unsigned char value) {
     performanceCounter.incrementAccess();
     unsigned long setIndex = decoder->getSetIndex(address);
-    sets[setIndex]->write(address, value, performanceCounter); // Pass counter
+    sets[setIndex]->write(address, value, performanceCounter);
 }
 
 void Cache::display() const {
+    std::cout << "CACHE:\n";
     for (int i = 0; i < numSets; ++i) {
-        std::cout << "Set " << i << ":\n";
-        sets[i]->display();
+        sets[i]->display(i);
     }
+}
+
+
+const PerformanceCounter& Cache::getPerformanceCounter() const {
+    return performanceCounter;
 }

@@ -34,13 +34,11 @@ unsigned char Set::read(unsigned long address, PerformanceCounter& performanceCo
     if (targetBlock) {
         // Cache hit
         performanceCounter.incrementHit();
-        performanceCounter.incrementAccess();
         return targetBlock->read(blockOffset);
     } else {
         // Cache miss
         // Find a block to replace
         performanceCounter.incrementMiss();
-        performanceCounter.incrementAccess();
         Block* blockToReplace = nullptr;
         // First look for an invalid block
         for (int i = 0; i < numBlocks; ++i) {
@@ -95,13 +93,11 @@ void Set::write(unsigned long address, unsigned char value, PerformanceCounter& 
 
     if (targetBlock) {
         performanceCounter.incrementHit();
-        performanceCounter.incrementAccess();
         targetBlock->write(blockOffset, value);
         return;
     } else {
         // Cache miss
         performanceCounter.incrementMiss();
-        performanceCounter.incrementAccess();
         // Find a block to replace
         Block* blockToReplace = nullptr;
         // First look for an invalid block
@@ -141,8 +137,11 @@ void Set::write(unsigned long address, unsigned char value, PerformanceCounter& 
     }
 }
 
-void Set::display() const {
+void Set::display(int setIndex) const {
+    std::cout << "  Set " << setIndex << "\n";
+    std::cout << "    Blocks\n";
     for (int i = 0; i < numBlocks; ++i) {
+        std::cout << "    " << i << ":\n";
         blocks[i]->display();
     }
 }

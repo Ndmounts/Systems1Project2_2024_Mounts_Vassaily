@@ -2,10 +2,10 @@
 #include <iostream>
 #include <iomanip>
 
-Memory::Memory(unsigned long size) : memorySize(size) { // Updated constructor
+Memory::Memory(unsigned long size) : memorySize(size) {
     bytes = new unsigned char[memorySize];
-    for (unsigned long i = 0; i < memorySize; ++i) { // Changed loop variable to unsigned long
-        bytes[i] = i % 255;
+    for (unsigned long i = 0; i < memorySize; ++i) {
+        bytes[i] = i % 256;  // Changed 255 to 256 to include 0xff
     }
 }
 
@@ -35,11 +35,17 @@ unsigned long Memory::getMemorySize() const {
 }
 
 void Memory::display() const {
-    for (unsigned long i = 0; i < memorySize; ++i) { // Changed loop variable to unsigned long
-        std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)bytes[i] << " ";
+    std::cout << "MAIN MEMORY:" << std::endl;
+    for (unsigned long i = 0; i < memorySize; ++i) {
+        std::cout << std::setw(2) << std::setfill('0') << std::hex << std::nouppercase << (int)bytes[i] << "  ";
         if ((i + 1) % 16 == 0) {
             std::cout << std::endl;
         }
     }
-    std::cout << std::dec << std::endl;
+    if (memorySize % 16 != 0) {
+        std::cout << std::endl;
+    }
+    // Reset manipulators
+    std::cout << std::dec << std::setfill(' ') << std::endl;
 }
+

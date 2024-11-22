@@ -56,9 +56,16 @@ void Block::updateTimestamp() {
 }
 
 void Block::display() const {
-    std::cout << "Block (tag: " << std::hex << tag << ", valid: " << valid << ", dirty: " << dirty << "): ";
+    std::cout << "      valid: " << valid
+              << "    tag: " << std::hex << tag
+              << std::dec  // Reset to decimal
+              << "    dirty: " << dirty
+              << "    timestamp: " << timestamp << "\n";
+    std::cout << "      ";
     for (int i = 0; i < blockSize; ++i) {
-        std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)data[i] << " ";
+        std::cout << std::setw(2) << std::setfill('0') << std::hex
+                  << std::nouppercase << (int)data[i] << "  ";
     }
-    std::cout << std::dec << std::endl;
+    // Reset manipulators
+    std::cout << std::dec << std::setfill(' ') << std::endl;
 }

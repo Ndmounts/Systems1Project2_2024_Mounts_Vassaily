@@ -32,27 +32,27 @@ $(EXEC): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(EXEC)
 
 # Compile Memory.cc
-Memory.o: Memory.cc Memory.h
+Memory.o: Memory.cc Memory.h PerformanceCounter.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c Memory.cc
 
 # Compile AddressDecoder.cc
-AddressDecoder.o: AddressDecoder.cc AddressDecoder.h
+AddressDecoder.o: AddressDecoder.cc AddressDecoder.h PerformanceCounter.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c AddressDecoder.cc
 
 # Compile Block.cc
-Block.o: Block.cc Block.h Memory.h
+Block.o: Block.cc Block.h Memory.h PerformanceCounter.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c Block.cc
 
 # Compile Set.cc
-Set.o: Set.cc Set.h Block.h AddressDecoder.h Memory.h
+Set.o: Set.cc Set.h Block.h AddressDecoder.h Memory.h PerformanceCounter.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c Set.cc
 
 # Compile Cache.cc
-Cache.o: Cache.cc Cache.h Set.h AddressDecoder.h Memory.h
+Cache.o: Cache.cc Cache.h Set.h AddressDecoder.h Memory.h PerformanceCounter.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c Cache.cc
 
 # Compile Simulation.cc
-Simulation.o: Simulation.cc Cache.h Set.h Block.h AddressDecoder.h Memory.h
+Simulation.o: Simulation.cc Cache.h Set.h Block.h AddressDecoder.h Memory.h PerformanceCounter.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c Simulation.cc
 
 # Clean Target to Remove Compiled Files

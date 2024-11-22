@@ -17,7 +17,6 @@ private:
 
     PerformanceCounter performanceCounter;
 
-
 public:
     Cache(Memory* memory, int cacheSize, int blockSize, int associativity);
     ~Cache();
@@ -26,6 +25,8 @@ public:
     void write(unsigned long address, unsigned char value);
 
     void display() const;
+
+    const PerformanceCounter& getPerformanceCounter() const; // Added getter
 };
 
 #endif // CACHE_H
