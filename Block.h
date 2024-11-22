@@ -1,51 +1,43 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
+#include "Memory.h"
 #include <chrono>
-#include <iostream>
-#include <stdlib.h>
-
-
-
-std::chrono::high_resolution_clock m_clock;
 
 class Block {
-    private:
-        int blockSize;                  // Size of the block in bytes
-        unsigned char* data;            // Array to hold block data
-        unsigned long tag;              // Tag for the block (part of the address)
-        bool valid;                     // Flag to indicate if the block contains valid data
-        bool dirty;                     // Flag to indicate if the block has been modified
-        long timestamp;                 // Timestamp for LRU tracking
-        unsigned char* mainMemory;      // Pointer to main memory
+private:
+    unsigned char* data;
+    int blockSize;
+    unsigned long tag;
+    bool valid;
+    bool dirty;
+    Memory* memory;
+    std::chrono::high_resolution_clock m_clock;
+    long timestamp;
 
-        // Private helper to update timestamp 
-        void updateTimestamp() {
-            timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(m_clock.now().time_since_epoch()).count();
-        };
+public:
+    Block(int blockSize, Memory* memory);
+    ~Block();
 
-        public:
-        // Constructor
-        Block(int blockSize, unsigned char* mainMemory);
+    unsigned char read(int blockOffset);
+    void write(int blockOffset, unsigned char value);
 
-        // Destructor
-        ~Block();
+    void loadFromMemory(unsigned long address);
+    void saveToMemory(unsigned long address);
 
-        // Methods to read and write data within the block
-        unsigned char read(int blockOffset);              // Read a byte at the given block offset
-        void write(int blockOffset, unsigned char value); // Write a byte at the given block offset
+    unsigned long getTag() const { return tag; }
+    void setTag(unsigned long tag) { this->tag = tag; }
 
-        // Methods to load and save data to/from main memory
-        void loadFromMemory(unsigned long address, unsigned long tag);  // Load data from memory
-        void saveToMemory(unsigned long address);                       // Save data back to memory
+    bool isValid() const { return valid; }
+    void setValid(bool valid) { this->valid = valid; }
 
-        // Getters and setters
-        unsigned long getTag() const { return tag; }
-        bool isValid() const { return valid; }
-        bool isDirty() const { return dirty; }
-        void setTag(unsigned long newTag) { tag = newTag; valid = true; dirty = false; }
-        void markDirty() { dirty = true; }
-        long getTimestamp() const { return timestamp;};
+    bool isDirty() const { return dirty; }
+    void setDirty(bool dirty) { this->dirty = dirty; }
+
+    long getTimestamp() const { return timestamp; }
+    void updateTimestamp();
+
+    void display() const;
 };
 
 #endif // BLOCK_H
